@@ -27,11 +27,30 @@
         "ide0:0.present": "TRUE",
         "ide0:0.redo": "",
         "scsi0:0.present": "FALSE"
-      }
+      },
+      "tools_upload_flavor": "linux"
 
 		}
 	],
-
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "scripts/vmware.repo",
+      "destination": "/tmp/vmware-tools.repo"
+    },
+    {
+      "type": "shell",
+      "scripts": [
+              "scripts/init.sh",
+              "scripts/vmware.sh",
+              "scripts/vagrant.sh",
+              "scripts/cleanup.sh",
+              "scripts/zerodisk.sh"
+      ],
+       "execute_command": "echo 'vagrant'|sudo -S sh '{{.Path}}'"
+    }
+      
+  ],
   "post-processors": [
     {
       "output": "builds/centos-6.6-x86_64.box",
