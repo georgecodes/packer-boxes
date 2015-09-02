@@ -1,49 +1,40 @@
 { 
 	"builders": [
 		{
-			"type": "vmware-iso",
-      "iso_url": "http://mirrors-uk.go-parts.com/centos/6.6/isos/x86_64/CentOS-6.6-x86_64-minimal.iso",
-      "iso_checksum": "eb3c8be6ab668e6d83a118323a789e6c",
+			"type": "virtualbox-iso",
+      "iso_url": "http://anorien.csc.warwick.ac.uk/mirrors/centos/6.7/isos/x86_64/CentOS-6.7-x86_64-minimal.iso",
+      "iso_checksum": "9381a24b8bee2fed0c26896141a64b69",
       "iso_checksum_type": "md5",
       "headless": false,
       "http_directory": "http",
       "boot_command": [
         "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter><wait>"
       ],
-      "guest_os_type": "centos-64",
-      "output_directory": "packer-centos-6.6-x86_64-vmware",
-      "shutdown_command": "echo 'vagrant'|sudo -S /sbin/halt -h -p",
+      "guest_os_type": "RedHat_64",
+      "output_directory": "packer-centos-6.7-x86_64-virtualbox",
+      "shutdown_command": "echo '/sbin/halt -h -p' > /tmp/shutdown.sh; echo 'vagrant'|sudo -S sh '/tmp/shutdown.sh'",
+      "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
       "ssh_password": "vagrant",
       "ssh_port": 22,
       "ssh_username": "vagrant",
       "ssh_wait_timeout": "10000s",
-      "type": "vmware-iso",
-      "vm_name": "packer-centos-6.6-x86_64",
-      "vmx_data": {
-        "cpuid.coresPerSocket": "1",
-        "numvcpus": "2","ethernet0.networkName": "VM Network",
-        "memsize": "2048",
-        "ide0:0.fileName": "disk.vmdk",
-        "ide0:0.present": "TRUE",
-        "ide0:0.redo": "",
-        "scsi0:0.present": "FALSE"
-      },
-      "tools_upload_flavor": "linux"
+      "type": "virtualbox-iso",
+      "vm_name": "packer-centos-6.7-x86_64",
+      "virtualbox_version_file": ".vbox_version",
+      "vboxmanage": [
+        [ "modifyvm", "{{.Name}}", "--memory", "512" ],
+        [ "modifyvm", "{{.Name}}", "--cpus", "1" ]
+      ]
 
 		}
 	],
   "provisioners": [
     {
-      "type": "file",
-      "source": "scripts/vmware.repo",
-      "destination": "/tmp/vmware-tools.repo"
-    },
-    {
       "type": "shell",
       "scripts": [
               "scripts/init.sh",
-              "scripts/vmware.sh",
               "scripts/vagrant.sh",
+              "scripts/vbox.sh",
               "scripts/cleanup.sh",
               "scripts/zerodisk.sh"
       ],
@@ -53,7 +44,7 @@
   ],
   "post-processors": [
     {
-      "output": "builds/centos-6.6-x86_64.box",
+      "output": "builds/centos-6.7-x86_64.box",
       "type": "vagrant"
     }
   ]

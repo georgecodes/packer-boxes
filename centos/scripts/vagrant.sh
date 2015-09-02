@@ -24,13 +24,4 @@ if [ -f /etc/sudoers ] ; then
     sed -i -e 's/%sudo.*ALL=.*ALL/%sudo ALL=NOPASSWD:ALL/g' /etc/sudoers
 fi
 
-if [ -f /etc/redhat-release -a -f /home/vagrant/.vbox_version ] ; then
-    # Exclude upgrading kernels
-    if [ "$OS" == "centos" ] ; then
-        sed -i -e 's/\[updates\]/\[updates\]\nexclude=kernel*/' \
-            /etc/yum.repos.d/CentOS-Base.repo
-    else
-        sed -i -e 's/\[updates\]/\[updates\]\nexclude=kernel*/' \
-            /etc/yum.repos.d/fedora-updates.repo
-    fi
-fi
+

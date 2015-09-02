@@ -1,3 +1,4 @@
 #!/bin/bash
 
-mv /tmp/vmware-tools.repo /etc/yum.repos.d/vmware-tools.repo
+sed -i "s/^.*requiretty/#Defaults requiretty/" /etc/sudoers
+yum -y install gcc make gcc-c++ kernel-devel-`uname -r` perl
