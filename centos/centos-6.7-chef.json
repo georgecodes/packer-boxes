@@ -1,0 +1,54 @@
+{ 
+	"builders": [
+		{
+			"type": "virtualbox-iso",
+      "iso_url": "http://anorien.csc.warwick.ac.uk/mirrors/centos/6.7/isos/x86_64/CentOS-6.7-x86_64-minimal.iso",
+      "iso_checksum": "9381a24b8bee2fed0c26896141a64b69",
+      "iso_checksum_type": "md5",
+      "headless": false,
+      "http_directory": "http",
+      "boot_command": [
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter><wait>"
+      ],
+      "guest_os_type": "RedHat_64",
+      "output_directory": "packer-centos-6.7-x86_64-chef-virtualbox",
+      "shutdown_command": "echo '/sbin/halt -h -p' > /tmp/shutdown.sh; echo 'vagrant'|sudo -S sh '/tmp/shutdown.sh'",
+      "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
+      "ssh_password": "vagrant",
+      "ssh_port": 22,
+      "ssh_username": "vagrant",
+      "ssh_wait_timeout": "10000s",
+      "type": "virtualbox-iso",
+      "vm_name": "packer-centos-6.7-chef-x86_64",
+      "virtualbox_version_file": ".vbox_version",
+      "vboxmanage": [
+        [ "modifyvm", "{{.Name}}", "--memory", "512" ],
+        [ "modifyvm", "{{.Name}}", "--cpus", "1" ]
+      ]
+
+		}
+	],
+  "provisioners": [
+    {
+      "type": "shell",
+      "scripts": [
+              "scripts/init.sh",
+              "scripts/vagrant.sh",
+              "scripts/vbox.sh",
+              "scripts/epel.sh",
+              "scripts/chef.sh",
+              "scripts/cleanup.sh",
+              "scripts/zerodisk.sh"
+      ],
+       "execute_command": "echo 'vagrant'|sudo -S sh '{{.Path}}'"
+    }
+      
+  ],
+  "post-processors": [
+    {
+      "output": "builds/centos-6.7-chef-x86_64.box",
+      "type": "vagrant"
+    }
+  ]
+	
+}
